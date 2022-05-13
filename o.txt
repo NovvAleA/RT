@@ -1,0 +1,9 @@
+camera     -6 0 0
+normal      1 0 0
+up          0 0 4
+lamp        0 2 0
+a0          6
+limit       10
+alpha       1
+width       800
+height      600
