@@ -1,0 +1,15 @@
+camera     -2 -2 -2
+normal      1 1 1
+up          -1 -1 2
+lamp        2 0 0
+a0          6
+limit       10
+alpha       1
+width       800
+height      600
+
+
+parall 2 2 2 
+       1 0 0
+	   0 1 0
+	   0 0 1
