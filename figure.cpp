@@ -220,9 +220,14 @@
 	 uint32_t ww = uint32_t(w_per);
 	 uint32_t hh = uint32_t(h_per);
 	 //// Create a BMP image in memory, modify it, save it on disk
+	  
+	  
+	 
 	 //BMP bmp2(ww, hh);
 	 //bmp2.fill_region(0, 0, ww, hh, 200, 220, 255, 255);
 	 BMP bmp2("space.bmp");
+	
+	 
 
 	 //if (1 == 1) {//drow axes
 		// for (int i = 0; i < hh; i++) {
@@ -261,12 +266,19 @@
 			 if (cos_a_l != 10) {   //place for intesection function
 				 if (cos_a_l > 0) {
 					 color = abs(int(180 * cos_a_l));
-					 bmp2.set_pixel(i, j,50 + color,20 + color*1,40 + color, 230);//
+					 bmp2.set_pixel(i, j,50 + color,10 + color,40 + color*1.1, 230);//
 				 }
 				 if (cos_a_l <= 0) {
-					 bmp2.set_pixel(i, j, 50, 20,40, 230);
+					 bmp2.set_pixel(i, j, 50, 10,40, 230);
 				 }
-				 //	bmp2.set_pixel(i, j, 255, 20, 20, 255);
+				 //if (cos_a_l > 0) {
+					// color = abs(int(200 * cos_a_l));
+					// bmp2.set_pixel(i, j, 50 + color, 50 + color , 50 + color, 250);//
+				 //}
+				 //if (cos_a_l <= 0) {
+					// bmp2.set_pixel(i, j, 50, 50, 50, 250);
+				 //}
+				
 			 }
 			 z += dh;
 		 }
