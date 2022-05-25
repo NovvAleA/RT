@@ -166,7 +166,7 @@ vector<figure*> create_arr_of_figure_in_simplified_coordinates( const string& fn
 
     //orient the up along Oz (axe3)
     if (PRM.up[1] != 0) {
-        float fi_x = atan(PRM.up[2]/ PRM.up[1]);
+        float fi_x = -1.57 + atan(PRM.up[2]/ PRM.up[1]);
         Rotation_Matrix  Rx(fi_x, 1);
         PRM.camera = Rx * PRM.camera;
         PRM.normal = Rx * PRM.normal;
