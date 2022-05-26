@@ -46,11 +46,11 @@ private:
 	Vector tmp, tmp1;
 	Vector normal;
 	Vector P;
-	float t1;
-	float t2;
-	float D_4;//  D/4
-	float a_coef;// coefficient: a_coef*t^2 + 2*b_2coef*t + c = 0
-	float b_2coef;
+	//float t1;
+	//float t2;
+	//float D_4;//  D/4
+	//float a_coef;// coefficient: a_coef*t^2 + 2*b_2coef*t + c = 0
+	//float b_2coef;
 	Vector camera;
 public:
 	sphere(Vector c, Vector a1, Vector a2, Vector a3, Vector a0) {
@@ -66,11 +66,11 @@ public:
 		constv_m1_0_0.set(-1, 0, 0);
 		constv_1_0_0.set(1, 0, 0);
 		P.set(0, 0, 0);
-		t1 = 0;
+		/*t1 = 0;
 		t2 = 0;
 		D_4 = 0;
 		a_coef = 0;
-		b_2coef = 0;
+		b_2coef = 0;*/
 		camera.set(-a0_, 0, 0);
 	}
 	void simple_figure(Vector c, Vector a1, Vector a2, Vector a3, Vector a0) override {
@@ -82,29 +82,33 @@ public:
 		constv_m1_0_0.set(-1, 0, 0);
 		constv_1_0_0.set(1, 0, 0);
 		P.set(0, 0, 0);
-		t1 = 0;
+		/*t1 = 0;
 		t2 = 0;
 		D_4 = 0;
 		a_coef = 0;
-		b_2coef = 0;
+		b_2coef = 0;*/
 		camera = a0;
 	}
 	float dist(line l) {
-		tmp1 = camera - centre;
-		tmp = l.get_e().cross(tmp1);
-		return tmp.module() / l.get_e().module();
+		Vector temp1, temp2;
+		temp1 = camera - centre;
+		temp2 = l.get_e().cross(temp1);
+		return temp2.module() / l.get_e().module();
 	}
 	float volume() override{
 		return 4 * pi * pow(R,3)/ 3;
 	}
 	Vector intersection(line l)  {
-		t1 = dist(l);
+	//	t1 = dist(l);
 		if (dist(l) <= R) { 
-			return constv_1_0_0;
+			Vector tmp_1_0_0(1, 0, 0);
+			return tmp_1_0_0;
 	    }
-		return constv_m1_0_0;
+		Vector tmp_m1_0_0(-1, 0, 0);
+		return tmp_m1_0_0;
 	}
 	Vector point_of_intersection(line l) {
+		float t1 = 0, t2 = 0, D_4 = 0, a_coef = 0, b_2coef = 0;
 		tmp = camera - centre;
 		a_coef = l.get_e().scalar(l.get_e());
 		b_2coef = l.get_e().scalar(tmp);
@@ -114,6 +118,7 @@ public:
 	}
 	float intersection_and_angle(line l, Vector lamp) {
 		if (intersection(l)[0] != -1) {
+			float t1 = 0, t2 = 0, D_4 = 0, a_coef = 0, b_2coef = 0;
 			tmp = camera - centre;
 			a_coef = l.get_e().scalar(l.get_e());
 			b_2coef = l.get_e().scalar(tmp);
@@ -130,24 +135,27 @@ public:
 		return 10;
 	}
 	Vector_and_cos point_and_angle(line l, Vector lamp) {
-		P_c.cos = 10;
+		Vector_and_cos Point;
 		if (intersection(l)[0] != -1) {
-			tmp = camera - centre;
+			Vector temp_cc, temp_P, tmp_normal;
+			float t1 = 0, t2 = 0, D_4 = 0, a_coef = 0, b_2coef = 0;
+
+			temp_cc = camera - centre;
 			a_coef = l.get_e().scalar(l.get_e());
-			b_2coef = l.get_e().scalar(tmp);
-			D_4 = b_2coef * b_2coef - a_coef * (tmp.scalar(tmp) - R * R);
+			b_2coef = l.get_e().scalar(temp_cc);
+			D_4 = b_2coef * b_2coef - a_coef * (temp_cc.scalar(temp_cc) - R * R);
 			//if (D_4 >= 0) {}else {cout << "D_4 < 0\n";}  //just insurance
 			t1 = -b_2coef / a_coef;
 			t1 -= sqrt(D_4) / a_coef;
-			P = camera + l.get_e() * t1;
+			temp_P = camera + l.get_e() * t1;
 			//P = point_of_intersection(l);
-			normal = P - centre;
+			tmp_normal = temp_P - centre;
 			//lamp_direction = lamp - P
-			P_c.P = P;
-			P_c.cos = normal.cos_angle(lamp - P);
-			return P_c;
+			Point.P = temp_P;
+			Point.cos = tmp_normal.cos_angle(lamp - temp_P);
+			return Point;
 		}
-		return P_c;
+		return Point;
 	}
 };
 
@@ -303,41 +311,36 @@ public:
 		return 10;
 	}
 	Vector_and_cos point_and_angle(line l, Vector lamp) {
-		if ((l.get_e()).module() < 6.05 && l.get_e()[2] > 0) {
-			cout << "";                     // не забыть удалть
-		}
-		P_c.cos = 10;
-		counter = 0;
-		
-        
+		Vector_and_cos Point;
+		int counter_p = 0;
+		vector<Vector> arr_points;
+		vector<int> arr_ind;
+	
 		for (int i = 0; i < 12; i++) {
 			if (Ji[i].det() != 0) {
 				if (line_in_trihedral_angle(l, Ji[i])) {
 					if (i == 0) {
 						cout << "";
 					}
-					arr[counter] = l.intersection_plane(simplex[i][0], simplex[i][1], simplex[i][2]);//point of intersection line with simplex
-					arr_i[counter] = i;
-					counter++;
+					arr_points.push_back( l.intersection_plane(simplex[i][0], simplex[i][1], simplex[i][2]));//point of intersection line with simplex
+					arr_ind.push_back( i);
+					counter_p++;
 				}
 			}
 		}
-		if (counter == 1) {
-			P_c.P = arr[0];
-			P_c.cos = normal[arr_i[0]].cos_angle(lamp - arr[0]);
-			return P_c;//
+		if (counter_p == 1) {
+			Point.P = arr[0];
+			Point.cos = normal[arr_ind[0]].cos_angle(lamp - arr_points[0]);
+			return Point;//
 		}
-		if (counter == 2) {
-
-			_0_or_1 = l.nearest_point(arr[0], arr[1]);//calculate the angle between the lamp and
-			P_c.cos = normal[arr_i[_0_or_1]].cos_angle(lamp - arr[_0_or_1]);// the nearest intersection point
-			P_c.P = arr[_0_or_1];
-			return P_c;
+		if (counter_p == 2) {
+			bool a = 0;
+			a = l.nearest_point(arr_points[0], arr_points[1]);//calculate the angle between the lamp and
+			Point.cos = normal[arr_ind[a]].cos_angle(lamp - arr_points[a]);// the nearest intersection point
+			Point.P = arr_points[a];
+			return Point;
 		}
-		if (counter == 3) {
-			cout << "??? three points of intersection\n";
-		}
-		return P_c;
+		return Point;
 	}
 
 };
@@ -458,36 +461,36 @@ public:
 		return 10;
 	}
 	Vector_and_cos point_and_angle(line l, Vector lamp) {
-		P_c.cos = 10;
-		counter = 0;
+		Vector_and_cos Point;
+		int counter_p = 0;
+		vector<Vector> arr_points;
+		vector<int> arr_ind;
+
 		for (int i = 0; i < 4; i++) {
 			if (Ji[i].det() != 0) {
 				if (line_in_trihedral_angle(l, Ji[i])) {
 					if (i == 0) {
 						cout << "";
 					}
-					arr[counter] = l.intersection_plane(simplex[i][0], simplex[i][1], simplex[i][2]);//point of intersection line with simplex
-					arr_i[counter] = i;
-					counter++;
+					arr_points.push_back(l.intersection_plane(simplex[i][0], simplex[i][1], simplex[i][2]));//point of intersection line with simplex
+					arr_ind.push_back(i);
+					counter_p++;
 				}
 			}
 		}
-		if (counter == 1) {
-			P_c.P = arr[0];
-			P_c.cos = normal[arr_i[0]].cos_angle(lamp - arr[0]);
-			return P_c;//
+		if (counter_p == 1) {
+			Point.P = arr[0];
+			Point.cos = normal[arr_ind[0]].cos_angle(lamp - arr_points[0]);
+			return Point;//
 		}
-		if (counter == 2) {
-			_0_or_1 = l.nearest_point(arr[0], arr[1]);//calculate the angle between the lamp and
-			P_c.cos = normal[arr_i[_0_or_1]].cos_angle(lamp - arr[_0_or_1]);// the nearest intersection point
-			P_c.P = arr[_0_or_1];
-		//	l.set_p()
-			return P_c;                            		              	 
+		if (counter_p == 2) {
+			bool a = 0;
+			a = l.nearest_point(arr_points[0], arr_points[1]);//calculate the angle between the lamp and
+			Point.cos = normal[arr_ind[a]].cos_angle(lamp - arr_points[a]);// the nearest intersection point
+			Point.P = arr_points[a];
+			return Point;
 		}
-		if (counter == 3) {
-			cout << "??? three points of intersection\n";
-		}
-		return P_c;
+		return Point;
 	}
 };
 

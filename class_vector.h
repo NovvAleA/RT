@@ -343,6 +343,7 @@ public:
 	Vector P;
 	float cos;
 	Vector_and_cos() {
+		P.set(0, 0, 0);
 		cos = 10;
 	}
 	Vector_and_cos(const Vector_and_cos& other) {

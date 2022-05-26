@@ -206,7 +206,7 @@
 
  int drow_figures(vector<figure*> arr, parameters& PRM) {
 	 Vector lamp = PRM.lamp;
-	 float w = 0, h = 0, dw = 0, dh = 0;
+	 float w = 0, h = 0;
 	 float tg = 0;
 	 float a0 = PRM.a0;
 	 int h_per = PRM.height;
@@ -214,8 +214,7 @@
 	 tg = tan(0.5 * PRM.alpha);
 	 h = 2 * a0 * tg;
 	 w = w_per * h / h_per;
-	 dh = h / h_per;
-	 dw = w / w_per;
+	 
 
 	 uint32_t ww = uint32_t(w_per);
 	 uint32_t hh = uint32_t(h_per);
@@ -238,54 +237,58 @@
 		// }
 	 //}
 
-	 int dim = arr.size();
-	 Vector_and_cos tmp_P;
-	 vector<Vector_and_cos> points(dim);
-	 Vector a0v(-a0, 0, 0);
-	 float cos_a_l = 0;
-	 int color = 0;
-	 int ind = 0;
-	 line l(-a0, 0, 0, 1, 0, 0);
-	 float z = -h / 2 + dh;
-	 float y = -w / 2 + dw;
+	 //int dim = arr.size();
+	 //Vector_and_cos tmp_P;
+	 //vector<Vector_and_cos> points(dim);
+	 //Vector a0v(-a0, 0, 0);
+	 //float cos_a_l = 0;
+	 //int color = 0;
+	 //int ind = 0;
+	 //line l(-a0, 0, 0, 1, 0, 0);
+	 //float z = -h / 2 + dh;
+	// float y = -w / 2 + dw;
 
 	 auto start_for = std::chrono::steady_clock::now();
-     
-	 for (int i = 0; i < w_per; i++) {
-     //    #pragma omp parallel for
-		 for (int j = 0; j < h_per; j++) {
-			 l.set_e(a0, y, z);
-             
-			 for (int i1 = 0; i1 < dim; i1++) {
-				 points[i1] = arr[i1]->point_and_angle(l, lamp);
-			 }
-			 
-			 ind = nearest_from_point(points);
-			 tmp_P = points[ind];
-			 cos_a_l = tmp_P.cos;
-			 if (cos_a_l != 10) {   //place for intesection function
-				 if (cos_a_l > 0) {
-					 color = abs(int(180 * cos_a_l));
-					 bmp2.set_pixel(i, j,50 + color,10 + color,40 + color*1.1, 230);//
+#pragma omp parallel
+	 {   
+		 float dh = h / h_per;
+	     float dw = w / w_per;
+		 int dim = arr.size();
+		 Vector_and_cos tmp_P;
+		 //	 vector<Vector_and_cos> points(dim);
+		 Vector a0v(-a0, 0, 0);
+		 float cos_a_l = 0;
+		 int color = 0;
+		 int ind = 0;
+		 line l(-a0, 0, 0, 1, 0, 0);
+#pragma omp for private(ind,tmp_P, cos_a_l,color)
+		 for (int i = 0; i < w_per; i++) {
+			 float y = -w / 2 + dw*i;
+			 for (int j = 0; j < h_per; j++) {
+				 float z = -h / 2 + dh*j;
+				 l.set_e(a0, y, z);
+				 vector<Vector_and_cos> points(dim);
+
+				 for (int i1 = 0; i1 < dim; i1++) {
+					 points.push_back( arr[i1]->point_and_angle(l, lamp));
 				 }
-				 if (cos_a_l <= 0) {
-					 bmp2.set_pixel(i, j, 50, 10,40, 230);
+
+				 ind = nearest_from_point(points);
+				 tmp_P = points[ind];
+				 cos_a_l = tmp_P.cos;
+				 if (cos_a_l != 10) {   //place for intesection function
+					 if (cos_a_l > 0) {
+						 color = abs(int(180 * cos_a_l));
+						 bmp2.set_pixel(i, j, 50 + color, 10 + color, 40 + color * 1.1, 230);//
+					 }
+					 if (cos_a_l <= 0) {
+						 bmp2.set_pixel(i, j, 50, 10, 40, 230);
+					 }
 				 }
-				 //if (cos_a_l > 0) {
-					// color = abs(int(200 * cos_a_l));
-					// bmp2.set_pixel(i, j, 50 + color, 50 + color , 50 + color, 250);//
-				 //}
-				 //if (cos_a_l <= 0) {
-					// bmp2.set_pixel(i, j, 50, 50, 50, 250);
-				 //}
-				
 			 }
-			 z += dh;
 		 }
-		 z = -h / 2 + dh;
-		 y += dw;
-		 //cout << i << endl;
 	 }
+
 	 auto end_for = std::chrono::steady_clock::now();
 	 cout << "time: " << chrono::duration<double, milli>(end_for - start_for).count() << " ms" << "\n";
 	
